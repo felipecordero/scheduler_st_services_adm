@@ -46,50 +46,54 @@ days = ["monday", "tuesday", "wednesday", "thursday", "friday"]
 
 new_data = []
 
-for student in data:
-    for day in days:
-        for hour in student[day]:
-            new_data.append({day: student["name"], "hour": hour}) 
+try:
 
-df = pd.DataFrame(new_data)
-
-
-names = set()
-for col in days:
-    names.update(df[col].dropna().unique())
-
-names = list(names)
-names.sort()
-
-cmap = matplotlib.colormaps["RdYlGn"]
-
-df_count = df.groupby("hour").count().reset_index().style.background_gradient(cmap=cmap,vmin=0,vmax=5)
-
-new_df = df.groupby("hour")[days].agg(lambda x: '<br>'.join(x.dropna().astype(str))).reset_index()
-
-tab1, tab2 = st.tabs(["Specific Student", "All Students"])
-
-name = tab1.selectbox("Select One Student", options=names)
-
-especific_student = []
-especific_students_days = []
-for student in data:
-    if student["name"] == name:
+    for student in data:
         for day in days:
-            if len(student[day]) > 0:
-                especific_students_days.append(day)
-                for hour in student[day]:
-                    especific_student.append({day: "✓", "hour": hour})
+            for hour in student[day]:
+                new_data.append({day: student["name"], "hour": hour}) 
 
-student_df = pd.DataFrame(especific_student, columns=["hour"].extend(especific_students_days))
+    df = pd.DataFrame(new_data)
+
+    names = set()
+    for col in days:
+        names.update(df[col].dropna().unique())
+
+    names = list(names)
+    names.sort()
+
+    cmap = matplotlib.colormaps["RdYlGn"]
+
+    df_count = df.groupby("hour").count().reset_index().style.background_gradient(cmap=cmap,vmin=0,vmax=5)
+
+    new_df = df.groupby("hour")[days].agg(lambda x: '<br>'.join(x.dropna().astype(str))).reset_index()
+
+    tab1, tab2 = st.tabs(["Specific Student", "All Students"])
+
+    name = tab1.selectbox("Select One Student", options=names)
+
+    especific_student = []
+    especific_students_days = []
+    for student in data:
+        if student["name"] == name:
+            for day in days:
+                if len(student[day]) > 0:
+                    especific_students_days.append(day)
+                    for hour in student[day]:
+                        especific_student.append({day: "✓", "hour": hour})
+
+    student_df = pd.DataFrame(especific_student, columns=["hour"].extend(especific_students_days))
 
 
 
-tab1.write(student_df.groupby("hour")[especific_students_days].agg(lambda x: '<br>'.join(x.dropna().astype(str))).reset_index().to_html(index=False), unsafe_allow_html=True)
+    tab1.write(student_df.groupby("hour")[especific_students_days].agg(lambda x: '<br>'.join(x.dropna().astype(str))).reset_index().to_html(index=False), unsafe_allow_html=True)
 
-col1, col2 = tab2.columns(2)
+    col1, col2 = tab2.columns(2)
 
-col1.write(df_count.to_html(index=False, escape=False), unsafe_allow_html=True)
+    col1.write(df_count.to_html(index=False, escape=False), unsafe_allow_html=True)
 
-# Display the DataFrame in Streamlit with HTML line breaks rendered correctly
-col2.write(new_df.to_html(escape=False, index=True), unsafe_allow_html=True)
+    # Display the DataFrame in Streamlit with HTML line breaks rendered correctly
+    col2.write(new_df.to_html(escape=False, index=True), unsafe_allow_html=True)
+
+except:
+    st.write("No one has submitted any schedule availability yet")
