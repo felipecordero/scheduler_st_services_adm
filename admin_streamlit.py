@@ -46,7 +46,7 @@ days = ["monday", "tuesday", "wednesday", "thursday", "friday"]
 
 new_data = []
 
-st.button(label="Refresh", on_click=get_collection_as_json)
+st.button(label="Refresh", on_click=get_collection_as_json, args=(collection_name,))
 
 try:
 
