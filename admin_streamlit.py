@@ -52,8 +52,11 @@ try:
 
     for student in data:
         for day in days:
-            for hour in student[day]:
-                new_data.append({day: student["name"], "hour": hour}) 
+            try:
+                for hour in student[day]:
+                    new_data.append({day: student["name"], "hour": hour})
+            except:
+                pass
 
     df = pd.DataFrame(new_data)
 
